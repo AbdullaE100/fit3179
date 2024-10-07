@@ -3,76 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIT3179 Task 1 Visualization</title>
+    <title>FIT3179 Combined Visualizations</title>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
 
-<h1>Movie Ratings Visualization</h1>
+<h1>Movie Ratings Visualizations</h1>
 
-<!-- Visualization: Task 1 Visualization -->
+<!-- Combined Visualization -->
 <div id="vis"></div>
 
 <script type="text/javascript">
-    const visSpec = {
+    const spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": {
-        "url": "https://raw.githubusercontent.com/AbdullaE100/fit3179/main/movie_ratings.csv"
-      },
-      "transform": [
+      "vconcat": [
         {
-          "calculate": "toNumber(datum.year)",
-          "as": "year_num"
-        }
-      ],
-      "selection": {
-        "yearFilter": {
-          "type": "single",
-          "fields": ["year_num"],
-          "bind": {
-            "input": "range",
-            "min": 2000,
-            "max": 2017,
-            "step": 1
+          "data": {
+            "url": "https://raw.githubusercontent.com/AbdullaE100/fit3179/main/movie_ratings.csv"
+          },
+          "transform": [
+            {
+              "calculate": "toNumber(datum.year)",
+              "as": "year_num"
+            }
+          ],
+          "selection": {
+            "yearFilter": {
+              "type": "single",
+              "fields": ["year_num"],
+              "bind": {
+                "input": "range",
+                "min": 2000,
+                "max": 2017,
+                "step": 1
+              }
+            }
+          },
+          "mark": "circle",
+          "encoding": {
+            "x": {
+              "field": "votes",
+              "type": "quantitative",
+              "title": "Votes",
+              "axis": {"format": ","}
+            },
+            "y": {
+              "field": "imdb",
+              "type": "quantitative",
+              "title": "IMDb Rating"
+            },
+            "color": {
+              "field": "metascore",
+              "type": "quantitative"
+            },
+            "opacity": {
+              "condition": {
+                "selection": "yearFilter",
+                "value": 1
+              },
+              "value": 0.2
+            },
+            "tooltip": [
+              {"field": "movie", "type": "nominal", "title": "Movie"},
+              {"field": "imdb", "type": "quantitative", "title": "IMDb Rating", "format": ".1f"},
+              {"field": "votes", "type": "quantitative", "title": "Votes", "format": ","},
+              {"field": "year_num", "type": "temporal", "title": "Year"}
+            ]
+          }
+        },
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/AbdullaE100/fit3179/main/movie_ratings.csv"
+          },
+          "transform": [
+            {
+              "calculate": "toNumber(datum.year)",
+              "as": "year_num"
+            }
+          ],
+          "mark": "bar",
+          "encoding": {
+            "x": {
+              "field": "year_num",
+              "type": "ordinal",
+              "title": "Year"
+            },
+            "y": {
+              "aggregate": "average",
+              "field": "imdb",
+              "type": "quantitative",
+              "title": "Average IMDb Rating"
+            },
+            "tooltip": [
+              {"field": "year_num", "type": "ordinal", "title": "Year"},
+              {"field": "imdb", "aggregate": "average", "type": "quantitative", "title": "Average IMDb Rating"}
+            ]
           }
         }
-      },
-      "mark": "circle",
-      "encoding": {
-        "x": {
-          "field": "votes",
-          "type": "quantitative",
-          "title": "Votes",
-          "axis": {"format": ","}
-        },
-        "y": {
-          "field": "imdb",
-          "type": "quantitative",
-          "title": "IMDb Rating"
-        },
-        "color": {
-          "field": "metascore",
-          "type": "quantitative"
-        },
-        "opacity": {
-          "condition": {
-            "selection": "yearFilter",
-            "value": 1
-          },
-          "value": 0.2
-        },
-        "tooltip": [
-          {"field": "movie", "type": "nominal", "title": "Movie"},
-          {"field": "imdb", "type": "quantitative", "title": "IMDb Rating", "format": ".1f"},
-          {"field": "votes", "type": "quantitative", "title": "Votes", "format": ","},
-          {"field": "year_num", "type": "temporal", "title": "Year"}
-        ]
-      }
+      ]
     };
 
-    vegaEmbed('#vis', visSpec);
+    // Embed the combined visualization
+    vegaEmbed('#vis', spec);
 </script>
 
 </body>
